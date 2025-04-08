@@ -5,14 +5,14 @@
 </p>
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-1.0.5-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-1.1.0-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux|macos-yellow.svg"/>
-    <img src ="https://img.shields.io/badge/python-3.8|3.9|3.10|3.11|3.12-blue.svg" />
+    <img src ="https://img.shields.io/badge/python-3.10|3.11|3.12|3.13-blue.svg" />
 </p>
 
 ## 说明
 
-基于pymongo 4.1.1 开发的MongoDB数据库接口。
+基于pymongo 4.11.3 开发的MongoDB数据库接口。
 
 ## 使用
 
