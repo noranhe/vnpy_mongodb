@@ -1,5 +1,6 @@
 """"""
 from datetime import datetime
+from typing import Any
 
 from pymongo import ASCENDING, MongoClient, ReplaceOne
 from pymongo.database import Database
@@ -301,7 +302,7 @@ class MongodbDatabase(BaseDatabase):
         symbol: str,
         exchange: Exchange,
         interval: Interval
-    ) -> int:
+    ) -> Any:
         """删除K线数据"""
         filter: dict = {
             "symbol": symbol,
@@ -318,7 +319,7 @@ class MongodbDatabase(BaseDatabase):
         self,
         symbol: str,
         exchange: Exchange
-    ) -> int:
+    ) -> Any:
         """删除TICK数据"""
         filter: dict = {
             "symbol": symbol,
