@@ -1,6 +1,5 @@
 """"""
 from datetime import datetime
-from typing import Optional
 
 from pymongo import ASCENDING, MongoClient, ReplaceOne
 from pymongo.database import Database
@@ -129,7 +128,7 @@ class MongodbDatabase(BaseDatabase):
             "interval": bar.interval.value
         }
 
-        overview: Optional[dict] = self.bar_overview_collection.find_one(filter)
+        overview: dict | None = self.bar_overview_collection.find_one(filter)
 
         if not overview:
             overview = {
@@ -212,7 +211,7 @@ class MongodbDatabase(BaseDatabase):
             "exchange": tick.exchange.value
         }
 
-        overview: Optional[dict] = self.tick_overview_collection.find_one(filter)
+        overview: dict | None = self.tick_overview_collection.find_one(filter)
 
         if not overview:
             overview = {
