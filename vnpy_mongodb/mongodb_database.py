@@ -1,6 +1,6 @@
 """"""
 from datetime import datetime
-from typing import List
+from typing import Optional
 
 from pymongo import ASCENDING, MongoClient, ReplaceOne
 from pymongo.database import Database
@@ -37,7 +37,7 @@ class MongodbDatabase(BaseDatabase):
                 tzinfo=DB_TZ
             )
         else:
-            self.client: MongoClient = MongoClient(
+            self.client = MongoClient(
                 host=self.host,
                 port=self.port,
                 tz_aware=True,
@@ -91,9 +91,9 @@ class MongodbDatabase(BaseDatabase):
             unique=True
         )
 
-    def save_bar_data(self, bars: List[BarData], stream: bool = False) -> bool:
+    def save_bar_data(self, bars: list[BarData], stream: bool = False) -> bool:
         """保存K线数据"""
-        requests: List[ReplaceOne] = []
+        requests: list[ReplaceOne] = []
 
         for bar in bars:
             # 逐个插入
@@ -123,13 +123,13 @@ class MongodbDatabase(BaseDatabase):
         self.bar_collection.bulk_write(requests, ordered=False)
 
         # 更新汇总
-        filter: dict = {
+        filter = {
             "symbol": bar.symbol,
             "exchange": bar.exchange.value,
             "interval": bar.interval.value
         }
 
-        overview: dict = self.bar_overview_collection.find_one(filter)
+        overview: Optional[dict] = self.bar_overview_collection.find_one(filter)
 
         if not overview:
             overview = {
@@ -152,9 +152,9 @@ class MongodbDatabase(BaseDatabase):
 
         return True
 
-    def save_tick_data(self, ticks: List[TickData], stream: bool = False) -> bool:
+    def save_tick_data(self, ticks: list[TickData], stream: bool = False) -> bool:
         """保存TICK数据"""
-        requests: List[ReplaceOne] = []
+        requests: list[ReplaceOne] = []
 
         for tick in ticks:
             filter: dict = {
@@ -207,12 +207,12 @@ class MongodbDatabase(BaseDatabase):
         self.tick_collection.bulk_write(requests, ordered=False)
 
         # 更新Tick汇总
-        filter: dict = {
+        filter = {
             "symbol": tick.symbol,
             "exchange": tick.exchange.value
         }
 
-        overview: dict = self.tick_overview_collection.find_one(filter)
+        overview: Optional[dict] = self.tick_overview_collection.find_one(filter)
 
         if not overview:
             overview = {
@@ -241,7 +241,7 @@ class MongodbDatabase(BaseDatabase):
         interval: Interval,
         start: datetime,
         end: datetime
-    ) -> List[BarData]:
+    ) -> list[BarData]:
         """读取K线数据"""
         filter: dict = {
             "symbol": symbol,
@@ -255,7 +255,7 @@ class MongodbDatabase(BaseDatabase):
 
         c: Cursor = self.bar_collection.find(filter)
 
-        bars: List[BarData] = []
+        bars: list[BarData] = []
         for d in c:
             d["exchange"] = Exchange(d["exchange"])
             d["interval"] = Interval(d["interval"])
@@ -273,7 +273,7 @@ class MongodbDatabase(BaseDatabase):
         exchange: Exchange,
         start: datetime,
         end: datetime
-    ) -> List[TickData]:
+    ) -> list[TickData]:
         """读取TICK数据"""
         filter: dict = {
             "symbol": symbol,
@@ -286,7 +286,7 @@ class MongodbDatabase(BaseDatabase):
 
         c: Cursor = self.tick_collection.find(filter)
 
-        ticks: List[TickData] = []
+        ticks: list[TickData] = []
         for d in c:
             d["exchange"] = Exchange(d["exchange"])
             d["gateway_name"] = "DB"
@@ -331,11 +331,11 @@ class MongodbDatabase(BaseDatabase):
 
         return result.deleted_count
 
-    def get_bar_overview(self) -> List[BarOverview]:
+    def get_bar_overview(self) -> list[BarOverview]:
         """查询数据库中的K线汇总信息"""
         c: Cursor = self.bar_overview_collection.find()
 
-        overviews: List[BarOverview] = []
+        overviews: list[BarOverview] = []
         for d in c:
             d["exchange"] = Exchange(d["exchange"])
             d["interval"] = Interval(d["interval"])
@@ -346,11 +346,11 @@ class MongodbDatabase(BaseDatabase):
 
         return overviews
 
-    def get_tick_overview(self) -> List[TickOverview]:
+    def get_tick_overview(self) -> list[TickOverview]:
         """查询数据库中的Tick汇总信息"""
         c: Cursor = self.tick_overview_collection.find()
 
-        overviews: List[TickOverview] = []
+        overviews: list[TickOverview] = []
         for d in c:
             d["exchange"] = Exchange(d["exchange"])
             d.pop("_id")
